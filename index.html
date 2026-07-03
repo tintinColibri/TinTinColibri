@@ -10,21 +10,27 @@
     theme: {
       extend: {
         colors: {
-          brandBg:      '#FDF6F3',
-          brandBlush:   '#F8E8E0',
-          brandInk:     '#3D2B1F',
-          brandGold:    '#B08840',
-          brandDeepGold:'#8B6B30',
-          brandLightMuted:'#FAF0EC',
+          brandBg:        '#FBF6F1',   /* crema base */
+          brandBlush:     '#F6EFE6',   /* blanco roto cálido */
+          brandPink:      '#F3D7D2',   /* rosado muy pálido */
+          brandSky:       '#C8DCE7',   /* azul pálido de acento */
+          brandInk:       '#3D2B1F',
+          brandGold:      '#B08840',
+          brandDeepGold:  '#8B6B30',
+          brandLightMuted:'#FAF3EC',
         },
         fontFamily: {
           script:   ['FabfeltScript', 'cursive'],
           rounded:  ['RoundedElegance', 'sans-serif'],
+          serif:    ['"Cormorant Garamond"', '"Playfair Display"', 'Georgia', 'serif'],
         },
       }
     }
   }
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 @font-face {
     font-family: 'FabfeltScript';
@@ -41,19 +47,18 @@
 
   * { box-sizing: border-box; }
 
-  /* ── Pantallas independientes (sin scroll-jump) ── */
+  /* ── Pantallas independientes (Colecciones / Nuestra historia) ── */
   .screen { display: none; }
   .screen.active { display: block; }
 
-  /* Scrollbar hide for horizontal nav */
+  html { scroll-behavior: smooth; }
+
+  /* Scrollbar hide para nav horizontal en mobile */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* Carousel — contenedor exterior recorta, el track interno se mueve por transform (swipe JS) */
-  .carousel-viewport {
-    overflow: hidden;
-    border-radius: 14px;
-  }
+  /* Carousel dentro del modal expandido — se conserva intacto */
+  .carousel-viewport { overflow: hidden; border-radius: 14px; }
   .carousel-track {
     display: flex;
     transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -64,7 +69,7 @@
     flex: 0 0 100%;
     width: 100%;
     overflow: hidden;
-    background: #e8d5cb;
+    background: #F0E4DB;
     max-height: 350px;
     display: flex;
     align-items: center;
@@ -74,14 +79,11 @@
     font-size: 0.85rem;
     position: relative;
   }
-  /* object-contain: respeta la proporción original de la foto/video sin recortar
-     el contenido del kit — el fondo crema rellena el espacio sobrante a los lados. */
   .carousel-slide img,
   .carousel-slide video {
     width: 100%; height: auto; max-height: 350px; object-fit: contain; object-position: center;
   }
 
-  /* Dot indicators — opacidad dinámica para reflejar la foto activa del carrusel */
   .dot {
     transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
     opacity: 0.4;
@@ -93,9 +95,9 @@
     opacity: 1;
   }
 
-  /* Color circle selector — feedback táctil de pulsación */
+  /* Selector de color — círculos */
   .color-circle {
-    width: 34px; height: 34px;
+    width: 30px; height: 30px;
     border-radius: 50%;
     cursor: pointer;
     border: 3px solid transparent;
@@ -107,64 +109,35 @@
     transform: scale(1.18);
     box-shadow: inset 0 0 0 1.5px rgba(61,43,31,0.22), 0 0 0 3.5px rgba(176,136,64,0.28), 0 3px 10px rgba(61,43,31,0.18);
   }
-  .color-circle:active {
-    transform: scale(0.95);
-  }
-  .color-circle.selected:active {
-    transform: scale(1.06);
-  }
+  .color-circle:active { transform: scale(0.95); }
+  .color-circle.selected:active { transform: scale(1.06); }
 
-  /* Card expand — acordeón fluido con max-height medido dinámicamente desde JS */
+  /* Acordeón de detalles dentro de la tarjeta grande */
   .card-details {
     max-height: 0;
     overflow: hidden;
     opacity: 0;
     transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
   }
-  .card-details.open {
-    opacity: 1;
-    /* max-height real se asigna inline desde JS (scrollHeight) al abrir */
-  }
+  .card-details.open { opacity: 1; }
 
-  /* Smooth scroll */
-  html { scroll-behavior: smooth; }
-
-  /* Price reveal animation */
   @keyframes fadeInSlide {
     from { opacity: 0; transform: translateY(-4px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .price-revealed {
-    animation: fadeInSlide 0.35s ease forwards;
-  }
+  .price-revealed { animation: fadeInSlide 0.35s ease forwards; }
 
-  /* WhatsApp float pulse */
   @keyframes pulse-gold {
     0%, 100% { box-shadow: 0 0 0 0 rgba(176,136,64,0.4); }
     50%       { box-shadow: 0 0 0 10px rgba(176,136,64,0); }
   }
   .wa-btn { animation: pulse-gold 2.5s infinite; }
 
-  /* ═══════════════════════════════════════════
-     SKELETON SHIMMER DIAGONAL — efecto "aleteo de colibrí"
-     mientras initCatalog() descarga y procesa el CSV
-  ═══════════════════════════════════════════ */
-  .skeleton-card {
-    border-radius: 1.5rem;
-    overflow: hidden;
-    position: relative;
-    background: #F0DCD2;
-  }
+  /* ═══ SKELETON SHIMMER — tarjeta grande placeholder ═══ */
+  .skeleton-card { border-radius: 1.75rem; overflow: hidden; position: relative; background: #F0E4DB; }
   .skeleton-shimmer {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      115deg,
-      rgba(250,240,236,0) 30%,
-      rgba(255,255,255,0.65) 48%,
-      rgba(255,255,255,0.65) 52%,
-      rgba(250,240,236,0) 70%
-    );
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, rgba(250,245,240,0) 30%, rgba(255,255,255,0.65) 48%, rgba(255,255,255,0.65) 52%, rgba(250,245,240,0) 70%);
     background-size: 250% 250%;
     animation: shimmer-diagonal 1.6s ease-in-out infinite;
   }
@@ -172,164 +145,216 @@
     0%   { background-position: -100% -100%; }
     100% { background-position: 100% 100%; }
   }
-  .skeleton-fade-out {
-    animation: skeletonFadeOut 0.4s ease forwards;
-  }
-  @keyframes skeletonFadeOut {
-    from { opacity: 1; }
-    to   { opacity: 0; }
-  }
+  .skeleton-fade-out { animation: skeletonFadeOut 0.4s ease forwards; }
+  @keyframes skeletonFadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-  /* ═══════════════════════════════════════════
-     RESPUESTA TÁCTIL — feedback háptico visual en todo lo interactivo
-  ═══════════════════════════════════════════ */
-  .tap-feedback {
-    transition: transform 0.15s ease;
-  }
-  .tap-feedback:active {
-    transform: scale(0.95);
-  }
+  .tap-feedback { transition: transform 0.15s ease; }
+  .tap-feedback:active { transform: scale(0.95); }
 
-  /* Tap feedback adicional para botones de navegación */
-  .nav-pill {
-    transition: transform 0.15s ease, background-color 0.2s ease, color 0.2s ease;
-  }
-  .nav-pill:active {
-    transform: scale(0.95);
-  }
+  .nav-pill { transition: transform 0.15s ease, background-color 0.2s ease, color 0.2s ease; }
+  .nav-pill:active { transform: scale(0.95); }
 
-  /* ═══════════════════════════════════════════
-     BÚSQUEDA EN TIEMPO REAL — ocultamiento fluido (fade) en vez de un corte brusco.
-     El elemento primero pierde opacidad/escala, y solo después se le aplica `hidden`.
-  ═══════════════════════════════════════════ */
-  .product-card {
-    transition: opacity 0.2s ease, transform 0.2s ease;
+  /* ═══ TARJETAS GRANDES DE PRODUCTO ═══ */
+  .product-card-lg {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
   }
-  .product-card.search-fade-out {
-    opacity: 0;
-    transform: scale(0.97);
-    pointer-events: none;
+  .product-card-lg:hover {
+    box-shadow: 0 12px 28px rgba(61,43,31,0.10);
+    transform: translateY(-2px);
   }
+  .like-btn {
+    transition: transform 0.18s ease;
+  }
+  .like-btn:active { transform: scale(0.85); }
+  .like-btn.liked svg { fill: #C0102A; stroke: #C0102A; }
+  @keyframes heartPop {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.35); }
+    100% { transform: scale(1); }
+  }
+  .like-btn.pop { animation: heartPop 0.35s ease; }
+
+  /* Sección "Nuestra historia" oculta hasta que se abra desde el enlace */
+  #historia-inline { display: none; }
+  #historia-inline.open { display: block; }
 </style>
 
 </head>
-<body class="bg-brandLightMuted font-rounded text-brandInk min-h-screen pb-24">
+<body class="bg-brandBg font-rounded text-brandInk min-h-screen pb-24">
 
 <!-- ═══════════════════════════════════════════
      STICKY WRAPPER (header + nav) — visible en todas las pantallas
 ═══════════════════════════════════════════ -->
-<div class="sticky top-0 z-40 bg-brandLightMuted shadow-md border-b border-brandGold/10">
+<div class="sticky top-0 z-40 bg-brandBg/95 backdrop-blur-sm shadow-sm border-b border-brandGold/10">
 
   <!-- ── HEADER ── -->
   <header class="flex items-center gap-3 px-4 pt-4 pb-2">
-    <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-brandBlush shadow-md">
+    <div class="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 border-2 border-brandPink shadow-sm">
       <img id="header-logo" src="assets/logo.png" alt="Logo TinTin Colibrí" class="w-full h-full object-cover" />
     </div>
     <div class="flex flex-col">
-      <h1 class="font-rounded text-3xl leading-none text-brandGold tracking-wide font-semibold">TinTin Colibrí</h1>
-      <p class="font-rounded text-xs text-brandGold/75 mt-1 tracking-[0.18em] italic">Regalos con intención</p>
+      <h1 class="font-serif text-2xl leading-none text-brandInk tracking-wide">TinTin Colibrí</h1>
+      <p class="font-rounded text-[10px] text-brandGold/80 mt-1 tracking-[0.18em] uppercase">Regalos con intención</p>
     </div>
   </header>
 
-  <!-- ── SEARCH BAR ── -->
-  <div class="px-4 pt-1 pb-2">
-    <div class="flex items-center gap-2 bg-brandBlush rounded-full px-4 py-2.5 border border-brandGold/20 shadow-sm">
-      <svg class="w-4 h-4 text-brandGold flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <input type="text" id="search-input" placeholder="Buscar un regalo especial…"
-        class="bg-transparent w-full text-sm text-brandInk placeholder-brandInk/40 outline-none font-rounded" />
-    </div>
-  </div>
-
-  <!-- ── PILL NAV — controla las 3 pantallas independientes ── -->
-  <nav class="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
-    <button type="button" data-screen="destacados" onclick="showScreen('destacados')"
-      class="nav-pill flex-shrink-0 px-5 py-1.5 rounded-full bg-brandGold text-white text-xs font-rounded font-semibold tracking-wide shadow-sm transition-all active:scale-95 duration-150">Destacados</button>
-    <button type="button" data-screen="catalogo-completo" onclick="showScreen('catalogo-completo')"
-      class="nav-pill flex-shrink-0 px-5 py-1.5 rounded-full bg-brandBlush text-brandInk text-xs font-rounded tracking-wide border border-brandGold/30 transition-all active:scale-95 duration-150">Ver catálogo completo</button>
-    <button type="button" data-screen="sobre-nosotros" onclick="showScreen('sobre-nosotros')"
-      class="nav-pill flex-shrink-0 px-5 py-1.5 rounded-full bg-brandBlush text-brandInk text-xs font-rounded tracking-wide border border-brandGold/30 transition-all active:scale-95 duration-150">Sobre Nosotros</button>
-    <a href="#" onclick="openWhatsApp(); return false;" target="_blank"
-      class="nav-pill flex-shrink-0 px-5 py-1.5 rounded-full bg-brandBlush text-brandInk text-xs font-rounded tracking-wide border border-brandGold/30 transition-all active:scale-95 duration-150">Contacto</a>
+  <!-- ── NAV — enlaces libres, sin encapsular en botones ── -->
+  <nav class="flex items-center gap-5 px-5 pb-3 overflow-x-auto no-scrollbar font-rounded text-xs tracking-wide">
+    <a href="#inicio" onclick="goToInicioTop(event)" class="nav-link flex-shrink-0 text-brandInk/80 hover:text-brandGold transition-colors duration-150 pb-0.5" data-screen="inicio">Inicio</a>
+    <a href="#" onclick="showScreen('colecciones'); return false;" class="nav-link flex-shrink-0 text-brandInk/80 hover:text-brandGold transition-colors duration-150 pb-0.5" data-screen="colecciones">Colecciones</a>
+    <a href="#" onclick="showScreen('nuestra-historia'); return false;" class="nav-link flex-shrink-0 text-brandInk/80 hover:text-brandGold transition-colors duration-150 pb-0.5" data-screen="nuestra-historia">Nuestra historia</a>
+    <a href="#" onclick="openWhatsApp(); return false;" target="_blank" class="nav-link flex-shrink-0 text-brandInk/80 hover:text-brandGold transition-colors duration-150 pb-0.5">Contacto</a>
   </nav>
 </div>
 
 <!-- ═══════════════════════════════════════════
-     PANTALLA 1 — DESTACADOS (inicio)
+     PANTALLA — INICIO (scroll único)
 ═══════════════════════════════════════════ -->
-<main id="screen-destacados" class="screen active px-4 pt-4 space-y-4 max-w-lg mx-auto">
+<main id="screen-inicio" class="screen active">
 
-  <!-- ── BANNER DE BIENVENIDA — grid de 2 columnas: texto limpio a la izquierda,
-       imagen completa (sin recortes) a la derecha. En mobile cae a 1 columna. ── -->
-  <div id="welcome-banner" class="grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden shadow-md border border-brandGold/10">
+  <a id="inicio"></a>
 
-    <!-- IZQUIERDA — texto sobre degradado sólido de la paleta de marca, sin imagen detrás -->
-    <div class="bg-gradient-to-br from-brandGold via-[#9c7838] to-brandDeepGold p-6 flex flex-col justify-center order-2 md:order-1">
-      <p id="banner-eyebrow" class="text-[10px] font-rounded text-white/75 tracking-[0.2em] uppercase mb-1.5">✦ Colección nueva</p>
-      <h2 id="banner-title" class="font-script text-[2rem] leading-tight text-white drop-shadow-sm">Regala amor,<br/>regala intención</h2>
-      <p id="banner-sub" class="text-xs font-rounded text-white/85 mt-2 leading-relaxed">Encuentra el detalle perfecto para cada momento especial</p>
-      <!-- pill CTA -->
-      <div class="mt-3.5 inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 border border-white/20 self-start">
-        <span class="text-[11px] font-rounded text-white font-medium tracking-wide">Ver novedades &nbsp;→</span>
-      </div>
-    </div>
+  <!-- ── HERO ── -->
+  <section id="hero" class="relative min-h-[520px] flex items-end overflow-hidden">
+    <img id="hero-image" src="https://images.unsplash.com/photo-1490750967868-88df5691cc5a?w=1400&q=85"
+         alt="TinTin Colibrí" class="absolute inset-0 w-full h-full object-cover object-top" />
+    <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(61,43,31,0.05) 0%, rgba(61,43,31,0.15) 40%, rgba(251,246,241,0.92) 78%, #FBF6F1 100%);"></div>
 
-    <!-- DERECHA — imagen completa, proporción original respetada, alineada a la derecha -->
-    <div class="bg-brandBlush flex items-center justify-end order-1 md:order-2 h-[200px] md:h-auto">
-      <img id="banner-image" src="https://images.unsplash.com/photo-1490750967868-88df5691cc5a?w=1200&q=85"
-           alt="Banner TinTin Colibrí" class="w-full h-full object-contain object-right" />
-    </div>
-  </div>
-
-  <!-- ── SECCIÓN DESTACADOS ── -->
-  <section id="catalogo">
-    <h3 class="text-xs font-rounded tracking-widest uppercase text-brandGold/80 mb-3 pl-1">✦ Destacados</h3>
-
-    <div id="featured-grid" class="space-y-4">
-      <p class="text-xs font-rounded text-brandInk/40 text-center py-6">Cargando catálogo…</p>
+    <div class="relative z-10 w-full max-w-lg mx-auto px-6 pb-8 pt-32">
+      <p id="hero-eyebrow" class="flex items-center gap-1.5 text-[11px] font-rounded text-brandDeepGold tracking-[0.25em] uppercase mb-3">
+        <span>✦</span> Colección nueva
+      </p>
+      <p id="hero-script" class="font-script text-3xl text-brandGold/90 leading-none mb-1">Tin... tin...</p>
+      <h2 id="hero-title" class="font-serif text-4xl leading-[1.08] text-brandInk mb-4">El anuncio de algo extraordinario.</h2>
+      <div class="w-14 h-px bg-brandGold/50 mb-4"></div>
+      <p id="hero-body" class="font-rounded text-sm text-brandInk/70 leading-relaxed mb-6 max-w-sm">
+        Cajas que cuentan una historia, pensadas para el instante justo en que alguien se siente visto.
+      </p>
+      <a href="#" onclick="showScreen('colecciones'); return false;"
+         class="inline-flex items-center gap-2 rounded-full border border-brandGold/60 bg-brandBg/60 backdrop-blur-sm px-6 py-2.5 font-rounded text-xs font-semibold tracking-wide text-brandDeepGold hover:bg-brandGold hover:text-white transition-colors duration-200">
+        Ver colecciones
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
     </div>
   </section>
 
-  <!-- ── BOTONES CTA (pantalla Destacados) ── -->
-  <div class="flex gap-3 pt-1 pb-2">
-    <button type="button" onclick="showScreen('catalogo-completo')" class="flex-1 py-3 rounded-2xl bg-brandGold text-white font-rounded text-sm font-semibold text-center shadow-md active:scale-95 transition-transform duration-150 cursor-pointer select-none">Ver catálogo completo</button>
-    <a href="#" onclick="openWhatsApp(); return false;" target="_blank" class="flex-1 py-3 rounded-2xl border-2 border-brandGold text-brandDeepGold font-rounded text-sm font-semibold text-center active:scale-95 transition-transform duration-150">Contáctanos</a>
+  <div class="max-w-lg mx-auto px-4 space-y-14 mt-10">
+
+  <!-- ── OCASIONES ── -->
+  <section id="ocasiones">
+    <h3 class="text-center font-serif text-2xl text-brandInk mb-5">¿Qué quieres regalar hoy?</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="rounded-3xl p-5 shadow-sm text-center" style="background:#F3D7D2;">
+        <div class="w-10 h-10 mx-auto mb-3"></div>
+        <p class="font-rounded font-bold text-sm text-brandInk">Dar la bienvenida.</p>
+        <p class="font-rounded text-xs text-brandInk/65 mt-1.5 leading-relaxed">Para recibir una vida nueva con ternura</p>
+      </div>
+      <div class="rounded-3xl p-5 shadow-sm text-center" style="background:#F6EFE5;">
+        <div class="w-10 h-10 mx-auto mb-3"></div>
+        <p class="font-rounded font-bold text-sm text-brandInk">Sorprender Niñas.</p>
+        <p class="font-rounded text-xs text-brandInk/65 mt-1.5 leading-relaxed">Descubrir su imaginación y su riqueza interior</p>
+      </div>
+      <div class="rounded-3xl p-5 shadow-sm text-center" style="background:#C8DCE7;">
+        <div class="w-10 h-10 mx-auto mb-3"></div>
+        <p class="font-rounded font-bold text-sm text-brandInk">Un momento para sí misma</p>
+        <p class="font-rounded text-xs text-brandInk/65 mt-1.5 leading-relaxed">Para recordarle que merece pausar y sentir.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DESTACADOS ── -->
+  <section id="destacados">
+    <h3 class="text-center font-serif text-2xl text-brandInk mb-5">Destacados</h3>
+    <div id="featured-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <p class="col-span-full text-xs font-rounded text-brandInk/40 text-center py-6">Cargando catálogo…</p>
+    </div>
+  </section>
+
+  <!-- ── ASÍ NACE TINTÍN ── -->
+  <section id="asi-nace" class="text-center">
+    <h3 class="font-serif text-2xl text-brandInk mb-4">Así nace Tintín</h3>
+    <p class="font-rounded text-sm text-brandInk/70 leading-relaxed max-w-md mx-auto">
+      Tin... tin... Así suena el instante justo antes de que llegue algo extraordinario.
+      Como el roce de un colibrí sobre una flor, anunciando que algo está por florecer.
+    </p>
+    <a href="#" onclick="showScreen('colecciones'); return false;"
+       class="inline-flex items-center gap-2 mt-6 rounded-full bg-brandGold text-white px-6 py-2.5 font-rounded text-xs font-semibold tracking-wide shadow-sm hover:bg-brandDeepGold transition-colors duration-200">
+      Descubre el instante
+    </a>
+  </section>
+
+  <!-- ── SEPARADOR (CONFIG_SEPARADOR) ── -->
+  <div class="rounded-3xl overflow-hidden shadow-sm">
+    <img id="separator-image" src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80"
+         alt="" class="w-full h-48 object-cover" />
   </div>
 
-  <!-- bottom spacer -->
-  <div class="h-8"></div>
+  <!-- ── TEXTO 2 + ENLACE NUESTRA HISTORIA ── -->
+  <section id="texto-2" class="text-center">
+    <p class="font-rounded text-sm text-brandInk/70 leading-relaxed max-w-md mx-auto">
+      Tintin Colibrí no entrega cajas. Entrega el instante exacto en que alguien siente: “pensaron en mí”.
+      Cada caja esconde una historia que se revela capítulo a capítulo — pensada para que abrirla sea, en sí mismo, un pequeño milagro.
+    </p>
+    <a href="#" onclick="showScreen('nuestra-historia'); return false;"
+       class="inline-block mt-5 font-rounded text-sm font-semibold tracking-wide text-[#C48A86] hover:text-brandGold transition-colors duration-200">
+      Nuestra historia →
+    </a>
+  </section>
+
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer class="max-w-lg mx-auto px-4 mt-16 pt-10 pb-4 border-t border-brandGold/15">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+      <div>
+        <div class="w-8 h-8 mx-auto mb-2"></div>
+        <p class="font-rounded text-[11px] text-brandInk/60 tracking-wide">Hecho con intención</p>
+      </div>
+      <div>
+        <div class="w-8 h-8 mx-auto mb-2"></div>
+        <p class="font-rounded text-[11px] text-brandInk/60 tracking-wide">Personalizado</p>
+      </div>
+      <div>
+        <div class="w-8 h-8 mx-auto mb-2"></div>
+        <p class="font-rounded text-[11px] text-brandInk/60 tracking-wide">Presentación premium</p>
+      </div>
+      <div>
+        <div class="w-8 h-8 mx-auto mb-2"></div>
+        <p class="font-rounded text-[11px] text-brandInk/60 tracking-wide">Envíos a todo el país</p>
+      </div>
+    </div>
+    <div class="h-8"></div>
+  </footer>
 
 </main>
-
 <!-- ═══════════════════════════════════════════
-     PANTALLA 2 — CATÁLOGO COMPLETO (precios visibles desde el inicio)
+     PANTALLA — COLECCIONES (catálogo completo, tarjetas grandes)
 ═══════════════════════════════════════════ -->
-<main id="screen-catalogo-completo" class="screen px-4 pt-4 space-y-4 max-w-lg mx-auto">
+<main id="screen-colecciones" class="screen px-4 pt-6 max-w-5xl mx-auto">
 
-  <div class="flex items-center justify-between pl-1 mb-1">
-    <h2 class="font-rounded text-lg font-semibold text-brandInk">Catálogo completo</h2>
+  <div class="flex items-center justify-between mb-6 max-w-lg mx-auto md:max-w-none">
+    <h2 class="font-serif text-2xl text-brandInk">Colecciones</h2>
     <span id="catalog-count" class="text-[10px] font-rounded text-brandGold/70 uppercase tracking-widest">✦ piezas</span>
   </div>
 
-  <div id="full-catalog-grid" class="space-y-3"></div>
+  <div id="full-catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-  <div class="flex gap-3 pt-2 pb-2">
+  <div class="flex gap-3 pt-8 pb-2 max-w-lg mx-auto md:max-w-none">
     <a href="#" onclick="openWhatsApp(); return false;" target="_blank" class="flex-1 py-3 rounded-2xl bg-brandGold text-white font-rounded text-sm font-semibold text-center shadow-md active:scale-95 transition-transform duration-150">Pedir por WhatsApp</a>
-    <button type="button" onclick="showScreen('destacados')" class="flex-1 py-3 rounded-2xl border-2 border-brandGold text-brandDeepGold font-rounded text-sm font-semibold text-center active:scale-95 transition-transform duration-150">Volver a destacados</button>
+    <button type="button" onclick="showScreen('inicio')" class="flex-1 py-3 rounded-2xl border-2 border-brandGold text-brandDeepGold font-rounded text-sm font-semibold text-center active:scale-95 transition-transform duration-150">Volver al inicio</button>
   </div>
 
   <div class="h-8"></div>
 </main>
 
 <!-- ═══════════════════════════════════════════
-     PANTALLA 3 — SOBRE NOSOTROS
+     PANTALLA — NUESTRA HISTORIA
 ═══════════════════════════════════════════ -->
-<main id="screen-sobre-nosotros" class="screen px-4 pt-4 space-y-4 max-w-lg mx-auto">
+<main id="screen-nuestra-historia" class="screen px-4 pt-6 space-y-4 max-w-lg mx-auto">
 
-  <section id="sobre-nosotros" class="bg-brandBlush rounded-3xl p-6 border border-brandGold/10 shadow-md">
+  <section id="sobre-nosotros" class="bg-brandBlush rounded-3xl p-6 border border-brandGold/10 shadow-sm">
     <p class="text-[10px] font-rounded tracking-widest uppercase text-brandGold/70 mb-1">✦ Nuestra historia</p>
-    <h2 class="font-script text-3xl text-brandGold leading-tight mb-3">Sobre Nosotros</h2>
+    <h2 class="font-serif text-3xl text-brandInk leading-tight mb-3">Sobre Nosotros</h2>
     <p class="text-xs font-rounded text-brandInk/75 leading-relaxed mb-3">
       TinTin Colibrí nació del deseo de transformar los momentos cotidianos en recuerdos eternos. Como el colibrí que lleva el néctar de flor en flor, nosotras llevamos amor e intención en cada regalo que creamos a mano.
     </p>
@@ -354,7 +379,7 @@
 
   <div class="flex gap-3 pt-1 pb-2">
     <a href="#" onclick="openWhatsApp(); return false;" target="_blank" class="flex-1 py-3 rounded-2xl bg-brandGold text-white font-rounded text-sm font-semibold text-center shadow-md active:scale-95 transition-transform duration-150">Escríbenos por WhatsApp</a>
-    <button type="button" onclick="showScreen('destacados')" class="flex-1 py-3 rounded-2xl border-2 border-brandGold text-brandDeepGold font-rounded text-sm font-semibold text-center active:scale-95 transition-transform duration-150">Volver al inicio</button>
+    <button type="button" onclick="showScreen('inicio')" class="flex-1 py-3 rounded-2xl border-2 border-brandGold text-brandDeepGold font-rounded text-sm font-semibold text-center active:scale-95 transition-transform duration-150">Volver al inicio</button>
   </div>
 
   <div class="h-8"></div>
@@ -377,6 +402,9 @@
 // ═══════════════════════════════════════════
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSa5j883G-wOtHoKfIkUc2D4OGZg-dbUPhG6cHvSql4gNUMMYeBNhgtltdf5uoo_iJvIyx1lIUuMyyD/pub?output=csv';
 
+// Endpoint del Google Apps Script publicado para sumar Likes (ver script .gs entregado aparte)
+const LIKES_ENDPOINT = 'PEGA_AQUI_LA_URL_DE_TU_APPS_SCRIPT_WEB_APP';
+
 const WHATSAPP_NUMBER = '573136550926';
 const WHATSAPP_DEFAULT_MESSAGE = '¡Hola TinTin Colibrí! Quiero recibir asesoría personalizada para elegir un regalo especial.';
 
@@ -385,16 +413,22 @@ function openWhatsApp(message = WHATSAPP_DEFAULT_MESSAGE) {
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank', 'noopener,noreferrer');
 }
 
-// Banner por defecto, usado solo si la fila CONFIG_BANNER no existe en el CSV
+// Banner por defecto, usado solo si la fila CONFIG_BANNER no existe en el CSV.
+// El texto sigue el formato "Antetítulo ; Script ; Título ; Párrafo"
 const BANNER_DEFAULT = {
-  image: 'https://images.unsplash.com/photo-1490750967868-88df5691cc5a?w=800&q=85',
-  text:  'Regala amor,\nregala intención'
+  image: 'https://images.unsplash.com/photo-1490750967868-88df5691cc5a?w=1400&q=85',
+  text:  'Colección nueva ; Tin... tin... ; El anuncio de algo extraordinario. ; Cajas que cuentan una historia, pensadas para el instante justo en que alguien se siente visto.'
 };
 
-// Estado en memoria: todo el catálogo ya parseado desde el CSV
-let CATALOG = [];      // productos (sin la fila CONFIG_BANNER)
+// Fila CONFIG_SEPARADOR — imagen divisoria entre "Así nace Tintín" y el texto 2
+const SEPARATOR_DEFAULT = {
+  image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80'
+};
+
+// Estado en memoria: todo el catálogo ya parseado desde el CSV (sin filas de config)
+let CATALOG = [];
 let BANNER_CONFIG = null;
-let CURRENT_SEARCH_TERM = ''; // término de búsqueda activo (normalizado), ver initSearch()
+let SEPARATOR_CONFIG = null;
 
 // ═══════════════════════════════════════════
 // Parser manual de CSV
@@ -406,7 +440,6 @@ function parseCSV(text) {
   let field = '';
   let inQuotes = false;
 
-  // Normaliza saltos de línea
   const clean = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
   for (let i = 0; i < clean.length; i++) {
@@ -416,7 +449,7 @@ function parseCSV(text) {
     if (inQuotes) {
       if (char === '"' && next === '"') {
         field += '"';
-        i++; // saltar la comilla duplicada
+        i++;
       } else if (char === '"') {
         inQuotes = false;
       } else {
@@ -438,7 +471,6 @@ function parseCSV(text) {
       }
     }
   }
-  // última celda / fila pendiente
   if (field.length > 0 || row.length > 0) {
     row.push(field);
     rows.push(row);
@@ -451,12 +483,10 @@ function parseCSV(text) {
 
   for (let r = 1; r < rows.length; r++) {
     const rawRow = rows[r];
-    // ignorar filas completamente vacías
     if (rawRow.every(cell => cell.trim() === '')) continue;
 
     const obj = {};
     headers.forEach((header, idx) => {
-      // limpiar comillas accidentales sobrantes y espacios
       let value = (rawRow[idx] !== undefined ? rawRow[idx] : '').trim();
       value = value.replace(/^"+|"+$/g, '').trim();
       obj[header] = value;
@@ -468,14 +498,13 @@ function parseCSV(text) {
 }
 
 // ═══════════════════════════════════════════
-// initCatalog() — descarga el CSV, lo parsea y arranca el render
+// initCatalog() — descarga el CSV, separa filas CONFIG_* y arranca el render
+// Columnas esperadas: Nombre, Precio, Imagen, Colores, Descripcion, Disponible,
+// Destacado, Minifrase, Likes
 // ═══════════════════════════════════════════
 async function initCatalog() {
   renderSkeletonLoader();
 
-  // Aviso temprano: file:// bloquea fetch() por CORS en todos los navegadores.
-  // Esto no es un error del código ni de la hoja, es una restricción de seguridad
-  // del navegador para páginas abiertas localmente.
   if (window.location.protocol === 'file:') {
     showCatalogError('file-protocol');
     return;
@@ -490,17 +519,16 @@ async function initCatalog() {
 
     if (!rows.length) throw { type: 'empty' };
 
-    // Separar la fila de configuración del banner del resto de productos
     BANNER_CONFIG = null;
+    SEPARATOR_CONFIG = null;
     CATALOG = [];
 
     rows.forEach(row => {
       const nombre = (row['Nombre'] || '').toUpperCase().trim();
       if (nombre === 'CONFIG_BANNER') {
-        BANNER_CONFIG = {
-          image: row['Imagen'] || '',
-          text:  row['Descripcion'] || ''
-        };
+        BANNER_CONFIG = { image: row['Imagen'] || '', text: row['Descripcion'] || '' };
+      } else if (nombre === 'CONFIG_SEPARADOR') {
+        SEPARATOR_CONFIG = { image: row['Imagen'] || '' };
       } else if (row['Nombre'] && row['Nombre'].trim() !== '') {
         CATALOG.push(row);
       }
@@ -509,12 +537,12 @@ async function initCatalog() {
     if (!CATALOG.length) throw { type: 'no-products' };
 
     applyBanner();
+    applySeparator();
     renderFeatured();
     renderFullCatalogIfActive();
 
   } catch (err) {
     console.error('Error cargando el catálogo desde el CSV:', err);
-    // TypeError de fetch sin más contexto suele ser CORS o falla de red/DNS
     const type = (err && err.type) ? err.type
                 : (err instanceof TypeError) ? 'network-or-cors'
                 : 'unknown';
@@ -529,7 +557,7 @@ function showCatalogError(type, err) {
   const messages = {
     'file-protocol': {
       title: 'Estás abriendo el archivo localmente (file://)',
-      detail: 'Los navegadores bloquean la conexión al CSV cuando el archivo se abre con doble clic. Sube el sitio a tu hosting (Netlify, GitHub Pages, etc.) o pruébalo con un servidor local — ahí cargará normal.'
+      detail: 'Los navegadores bloquean la conexión al CSV cuando el archivo se abre con doble clic. Sube el sitio a tu hosting o pruébalo con un servidor local.'
     },
     'http': {
       title: `No se pudo descargar el CSV (HTTP ${err && err.status})`,
@@ -541,7 +569,7 @@ function showCatalogError(type, err) {
     },
     'no-products': {
       title: 'El CSV cargó pero no se encontró ningún producto',
-      detail: 'Revisa que la columna "Nombre" esté completa en cada fila (excepto la fila CONFIG_BANNER).'
+      detail: 'Revisa que la columna "Nombre" esté completa en cada fila (excepto CONFIG_BANNER y CONFIG_SEPARADOR).'
     },
     'network-or-cors': {
       title: 'No se pudo conectar con Google Sheets',
@@ -557,7 +585,7 @@ function showCatalogError(type, err) {
 
   dismissSkeletonThen(() => {
     featuredGrid.innerHTML = `
-      <div class="bg-brandBlush rounded-3xl p-5 text-center border border-brandGold/10 shadow-md">
+      <div class="col-span-full bg-brandBlush rounded-3xl p-5 text-center border border-brandGold/10 shadow-sm">
         <p class="text-sm font-rounded font-semibold text-brandInk/80">${msg.title}</p>
         <p class="text-xs font-rounded text-brandInk/55 mt-2 leading-relaxed">${msg.detail}</p>
       </div>`;
@@ -565,19 +593,32 @@ function showCatalogError(type, err) {
 }
 
 // ═══════════════════════════════════════════
-// Banner — controlado por la fila CONFIG_BANNER del Excel
+// Banner (Hero) — controlado por la fila CONFIG_BANNER.
+// Descripcion viene como "Antetítulo ; Script ; Título ; Párrafo" (split por ';')
 // ═══════════════════════════════════════════
 function applyBanner() {
   const cfg = BANNER_CONFIG || BANNER_DEFAULT;
-  const imgEl   = document.getElementById('banner-image');
-  const titleEl = document.getElementById('banner-title');
+  const imgEl      = document.getElementById('hero-image');
+  const eyebrowEl  = document.getElementById('hero-eyebrow');
+  const scriptEl   = document.getElementById('hero-script');
+  const titleEl    = document.getElementById('hero-title');
+  const bodyEl     = document.getElementById('hero-body');
 
-  if (imgEl && cfg.image) {
-    imgEl.src = cfg.image;
-  }
-  if (titleEl && cfg.text) {
-    titleEl.innerHTML = cfg.text.replace(/\n/g, '<br/>');
-  }
+  if (cfg.image && imgEl) imgEl.src = cfg.image;
+
+  const parts = String(cfg.text || '').split(';').map(p => p.trim());
+  const [eyebrow, script, title, body] = parts;
+
+  if (eyebrow && eyebrowEl) eyebrowEl.innerHTML = `<span>✦</span> ${escapeHtml(eyebrow)}`;
+  if (script && scriptEl) scriptEl.textContent = script;
+  if (title && titleEl) titleEl.textContent = title;
+  if (body && bodyEl) bodyEl.textContent = body;
+}
+
+function applySeparator() {
+  const cfg = SEPARATOR_CONFIG || SEPARATOR_DEFAULT;
+  const imgEl = document.getElementById('separator-image');
+  if (cfg.image && imgEl) imgEl.src = cfg.image;
 }
 
 // ═══════════════════════════════════════════
@@ -588,8 +629,6 @@ function isSi(value) {
 }
 
 function isDisponible(product) {
-  // Disponible='SI' por defecto si la celda viene vacía o con otro valor inesperado,
-  // solo se bloquea explícitamente cuando dice 'NO'
   return (product['Disponible'] || '').toUpperCase().trim() !== 'NO';
 }
 
@@ -598,14 +637,10 @@ function isDestacado(product) {
 }
 
 function formatPriceCOP(rawPrice) {
-  // Extrae solo los dígitos del valor de la celda Precio y los formatea en pesos colombianos
   const digits = String(rawPrice || '').replace(/[^\d]/g, '');
   const number = digits ? parseInt(digits, 10) : 0;
   return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0
   }).format(number);
 }
 
@@ -625,14 +660,11 @@ function isVariadosColor(product) {
   return !raw || /^variados?$/i.test(raw);
 }
 
-// Identificador estable por producto para usar en data-attributes / DOM ids
 function productKey(product, index) {
   return 'p' + index;
 }
-
 // ═══════════════════════════════════════════
-// Render de un color circle dentro de una tarjeta (estático en el HTML generado),
-// con escucha de click delegada para no perder el stopPropagation
+// Render de círculos de color dentro de la tarjeta expandida
 // ═══════════════════════════════════════════
 function colorCirclesMarkup(product, key) {
   if (isVariadosColor(product)) {
@@ -656,11 +688,7 @@ function colorCirclesMarkup(product, key) {
   `;
 }
 
-// Mapa de nombres de color en español a valores CSS reales.
-// Incluye colores simples y compuestos (ej. "Verde Menta", "Azul Claro").
-// Si el color no está en el mapa ni hace match parcial, se usa un gris neutro.
 const COLOR_MAP = {
-  // ── Simples ──
   'rosa': '#e8b4c0', 'rojo': '#c0102a', 'blanco': '#f5f0eb', 'menta': '#b5c9b0',
   'vainilla': '#f5e6c8', 'sandalo': '#c8ddd4', 'jazmin': '#f0e0f0',
   'natural': '#d4b896', 'lila': '#c8b4d0', 'sage': '#b4c8c4',
@@ -670,8 +698,6 @@ const COLOR_MAP = {
   'plateado': '#c4c4c4', 'cafe': '#6b4c3a', 'marron': '#6b4c3a', 'vino': '#7a2436',
   'mostaza': '#cda43a', 'oliva': '#7d8a5a', 'durazno': '#f0bfa0', 'perla': '#ede6dc',
   'celeste': '#a8d0e6', 'aqua': '#7fc8c4', 'salmon': '#f2a791', 'caramelo': '#bd8a4f',
-
-  // ── Compuestos (clave normalizada sin tildes, todo en minúsculas) ──
   'verde menta': '#9fd4b8', 'verde oliva': '#7d8a5a', 'verde botella': '#2f5d4f',
   'verde agua': '#9fd9cf', 'verde esmeralda': '#3a8c6e', 'verde militar': '#5c6b47',
   'azul claro': '#a8cce8', 'azul oscuro': '#2c4d6b', 'azul rey': '#2e4f9e',
@@ -685,77 +711,57 @@ const COLOR_MAP = {
   'beige claro': '#ece1d0', 'cafe oscuro': '#4a3326', 'cafe claro': '#a9826a'
 };
 
-// Quita tildes, colapsa espacios y normaliza a minúsculas. Reutilizada tanto
-// para el match de colores del Excel como para la búsqueda en tiempo real.
-function normalizeSearchText(text) {
+function normalizeText(text) {
   return String(text || '')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quitar tildes/acentos
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-    .replace(/\s+/g, ' ')   // colapsar espacios múltiples
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
-function normalizeColorName(name) {
-  return normalizeSearchText(name);
-}
+function normalizeColorName(name) { return normalizeText(name); }
 
 function colorToCss(name) {
   const key = normalizeColorName(name);
   if (!key) return '#cbb8a8';
-
-  // 1) match exacto (simple o compuesto)
   if (COLOR_MAP[key]) return COLOR_MAP[key];
-
-  // 2) fallback: si es un compuesto no listado (ej. "verde botella oscuro"),
-  // buscar si alguna palabra suelta del nombre coincide con una clave simple del mapa
   const words = key.split(' ');
   for (const word of words) {
     if (COLOR_MAP[word]) return COLOR_MAP[word];
   }
-
-  // 3) sin match: gris neutro elegante (el title="" del círculo sigue mostrando el nombre real)
   return '#cbb8a8';
 }
 
 // ═══════════════════════════════════════════
-// Carrusel multimedia dentro de la tarjeta expandida — táctil (swipe)
+// Carrusel multimedia dentro de la tarjeta expandida — se conserva intacto
 // ═══════════════════════════════════════════
-// Detecta si una URL multimedia es un video (.mp4 u otro formato de video común,
-// o un parámetro explícito que lo indique) para decidir si renderizar <video> en vez de <img>.
-// Detecta si una URL multimedia es un video: por extensión (.mp4/.webm/.mov/.m4v,
-// incluso con query params después), por parámetro explícito (?video=), o porque
-// viene de Catbox sin una extensión de imagen reconocible (Catbox hostea tanto
-// fotos como videos, así que solo se asume video si no es claramente una imagen).
 function isVideoUrl(url) {
   const raw = String(url || '').toLowerCase();
   const clean = raw.split('?')[0].split('#')[0];
-
   const hasVideoExtension = /\.(mp4|webm|mov|m4v)$/.test(clean);
   const hasImageExtension = /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)$/.test(clean);
   const hasVideoParam = /[?&]video=/.test(raw);
   const isCatboxWithoutImageExt = raw.includes('catbox') && !hasImageExtension;
-
   return hasVideoExtension || hasVideoParam || isCatboxWithoutImageExt;
 }
 
-// Miniatura de portada (tarjeta en reposo / catálogo completo):
-// <video> autoplay/loop/muted si el primer media es un video, <img> si no.
 function thumbnailMediaMarkup(url, altText) {
   if (!url) return '';
   if (isVideoUrl(url)) {
-    return `<video src="${url}" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>`;
+    return `<video data-autoplay-video autoplay loop muted playsinline preload="auto" class="w-full h-full object-cover object-center">
+      <source src="${url}" type="video/mp4">
+    </video>`;
   }
   return `<img src="${url}" alt="${escapeHtml(altText)}" class="w-full h-full object-cover object-center" />`;
 }
 
-// Genera el slide del carrusel: <video> autoplay/loop/muted si es video, <img> si no.
-// Ambos respetan su proporción original (object-contain / h-auto), sin recortar
-// el contenido del producto.
 function mediaSlideMarkup(url, altText) {
   if (isVideoUrl(url)) {
     return `
       <div class="carousel-slide">
-        <video src="${url}" autoplay loop muted playsinline class="w-full h-auto rounded-xl"></video>
+        <video data-autoplay-video autoplay loop muted playsinline preload="auto" class="w-full h-auto rounded-xl">
+          <source src="${url}" type="video/mp4">
+        </video>
       </div>`;
   }
   return `
@@ -790,123 +796,84 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
-
-// ═══════════════════════════════════════════
-// Tarjeta de la pantalla Destacados — precio oculto en reposo,
-// visible de inmediato al expandir (efecto acordeón)
-// ═══════════════════════════════════════════
 const WHATSAPP_ICON_SVG = `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.118 1.535 5.845L.057 23.552a.5.5 0 0 0 .6.607l5.803-1.46A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.8 9.8 0 0 1-5.12-1.44l-.367-.217-3.803.957.996-3.706-.24-.38A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>`;
 
+const HEART_ICON_SVG = `<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="#3D2B1F" stroke-width="2"><path d="M12 21s-7.2-4.5-9.6-9C.6 8.4 2.4 5 6 5c2 0 3.4 1 6 3.6C14.6 6 16 5 18 5c3.6 0 5.4 3.4 3.6 7-2.4 4.5-9.6 9-9.6 9z"/></svg>`;
+
 // ═══════════════════════════════════════════
-// Tarjeta de producto expandible — reutilizada en Destacados y en Catálogo Completo.
-// context='destacados': precio oculto en reposo, 2 botones 50/50 (WhatsApp + Ver catálogo).
-// context='catalogo': precio visible desde el inicio, 1 botón "Pedir por WhatsApp" a ancho completo.
+// Tarjeta GRANDE de producto — imagen ocupando la mitad superior, corazón de
+// like flotante, título + minifrase + colores visibles sin expandir.
+// Al hacer clic en cualquier parte (excepto el corazón) se expande mostrando
+// precio, descripción completa y botón de WhatsApp.
 // ═══════════════════════════════════════════
-function productCardMarkup(product, index, context) {
-  const key = (context === 'catalogo' ? 'full-' : '') + productKey(product, index);
+function productCardMarkup(product, index) {
+  const key = productKey(product, index);
   const disponible = isDisponible(product);
   const price = formatPriceCOP(product['Precio']);
   const images = getImageList(product);
-  const restImg = images[0] || '';
-  const colorSummary = isVariadosColor(product) ? 'Variados' : getColorList(product).join(' · ');
+  const coverImg = images[0] || '';
+  const minifrase = product['Minifrase'] || '';
 
-  const disabledClasses = disponible ? '' : 'opacity-50 pointer-events-none';
-  const clickHandler = disponible ? `onclick="toggleCard(this)"` : '';
+  const disabledOverlay = disponible ? '' : 'opacity-60';
+  const clickHandler = `onclick="toggleCard(this)"`;
 
-  const priceInRest = context === 'catalogo'
-    ? `<p class="font-rounded font-bold text-brandDeepGold text-sm mt-1">${price}</p>`
-    : '';
+  const colorDots = isVariadosColor(product)
+    ? `<span class="text-[11px] font-rounded text-brandInk/45 italic">Variados</span>`
+    : getColorList(product).slice(0, 6).map(c => `<span class="w-3.5 h-3.5 rounded-full inline-block border border-brandInk/10" style="background:${colorToCss(c)};" title="${escapeHtml(c)}"></span>`).join('');
 
-  const hintLine = context === 'catalogo'
-    ? `<p class="text-xs text-brandInk/50 mt-0.5 font-rounded">${escapeHtml(colorSummary)}</p>`
-    : `<p class="text-xs text-brandInk/50 mt-1 font-rounded">${escapeHtml(colorSummary)}</p>
-       ${disponible ? `<p class="text-[10px] font-rounded text-brandGold/60 mt-1.5 tracking-wide italic">Toca para ver más →</p>` : `<p class="text-[10px] font-rounded text-brandInk/40 mt-1.5 tracking-wide italic">No disponible</p>`}`;
-
-  const priceInDetails = context === 'catalogo'
-    ? '' // ya se mostró en reposo, no hace falta repetirlo arriba del todo
-    : `<div class="flex items-center justify-between pt-3 pb-3 mb-3 border-t border-brandGold/20">
-         <p class="font-rounded font-bold text-brandDeepGold text-xl tracking-tight">${price}</p>
-       </div>`;
-
-  const actionButtons = context === 'catalogo'
-    ? `<button onclick="orderWhatsApp(event,'${key}')" class="w-full py-3 rounded-2xl bg-brandGold text-brandInk font-rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform duration-150">
-        ${WHATSAPP_ICON_SVG}
-        Pedir por WhatsApp
-      </button>`
-    : `<div class="grid grid-cols-2 gap-2">
-        <button onclick="orderWhatsApp(event,'${key}')" class="py-3 rounded-2xl bg-brandGold text-brandInk font-rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform duration-150">
-          ${WHATSAPP_ICON_SVG}
-          Pedir por WhatsApp
-        </button>
-        <button onclick="event.stopPropagation(); showScreen('catalogo-completo')" class="py-3 rounded-2xl bg-brandLightMuted border border-brandGold/40 text-brandDeepGold font-rounded text-xs font-semibold flex items-center justify-center gap-2 active:scale-95 transition-transform duration-150">
-          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/></svg>
-          Ver catálogo completo
-        </button>
-      </div>`;
-
-  // Texto normalizado (sin tildes, minúsculas) precomputado una sola vez al renderizar,
-  // para que el filtro de búsqueda no tenga que volver a procesar el texto en cada tecla.
-  const searchName = normalizeSearchText(product['Nombre']);
-  const searchDesc = normalizeSearchText(product['Descripcion']);
+  const liked = isLiked(key);
 
   return `
-    <div class="product-card bg-brandBlush rounded-3xl overflow-hidden mb-4 shadow-md border border-brandGold/10 cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${disabledClasses}"
-         data-key="${key}" data-search-name="${escapeHtml(searchName)}" data-search-desc="${escapeHtml(searchDesc)}" ${clickHandler}>
-      <div class="card-rest flex items-center gap-3 p-3">
-        <div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-[#e8d5cb] shadow-sm flex items-center justify-center">
-          ${thumbnailMediaMarkup(restImg, product['Nombre'])}
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-start justify-between gap-1">
-            <h4 class="font-rounded font-semibold text-sm text-brandInk leading-tight">${escapeHtml(product['Nombre'])}</h4>
-            ${!disponible ? `<span class="flex-shrink-0 text-[10px] font-rounded bg-brandInk/70 text-white px-2 py-0.5 rounded-full">Agotado</span>` : ''}
-          </div>
-          ${hintLine}
-          ${priceInRest}
-        </div>
-        ${disponible ? `
-        <svg class="card-chevron w-4 h-4 text-brandGold/50 flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="m6 9 6 6 6-6"/>
-        </svg>` : ''}
+    <div class="product-card product-card-lg bg-white rounded-3xl overflow-hidden shadow-sm border border-brandGold/10 cursor-pointer"
+         data-key="${key}" data-product-index="${index}" ${clickHandler}>
+
+      <div class="relative aspect-square ${disabledOverlay}">
+        ${thumbnailMediaMarkup(coverImg, product['Nombre'])}
+        ${!disponible ? `<span class="absolute top-3 left-3 text-[10px] font-rounded bg-brandInk/75 text-white px-2.5 py-1 rounded-full tracking-wide">Agotado</span>` : ''}
+        <button type="button" onclick="event.stopPropagation(); toggleLike(this, '${key}')"
+                class="like-btn ${liked ? 'liked' : ''} absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center">
+          ${HEART_ICON_SVG}
+        </button>
       </div>
-      <div class="card-details px-4 pb-4">
-        ${priceInDetails}
+
+      <div class="p-4">
+        <h4 class="font-serif text-lg text-brandInk leading-snug">${escapeHtml(product['Nombre'])}</h4>
+        ${minifrase ? `<p class="font-rounded text-xs text-brandInk/55 mt-1">${escapeHtml(minifrase)}</p>` : ''}
+        <div class="flex items-center gap-1.5 mt-3">${colorDots}</div>
+      </div>
+
+      <div class="card-details px-4 pb-5">
+        <div class="pt-2 pb-3 mb-3 border-t border-brandGold/15">
+          <p class="font-rounded font-bold text-brandDeepGold text-xl tracking-tight">${price}</p>
+        </div>
         <p class="text-xs font-rounded text-brandInk/70 leading-relaxed mb-3">${escapeHtml(product['Descripcion'])}</p>
         ${carouselMarkup(product, key)}
         ${colorCirclesMarkup(product, key)}
-        ${actionButtons}
+        ${disponible
+          ? `<button onclick="event.stopPropagation(); orderWhatsApp(event,'${key}')" class="w-full py-3 rounded-2xl bg-brandGold text-white font-rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform duration-150">
+               ${WHATSAPP_ICON_SVG}
+               Pedir por WhatsApp
+             </button>`
+          : `<button disabled class="w-full py-3 rounded-2xl bg-brandInk/15 text-brandInk/40 font-rounded text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+               Agotado por ahora
+             </button>`
+        }
       </div>
     </div>
   `;
 }
 
-// Wrapper de compatibilidad — la pantalla Destacados sigue llamando featuredCardMarkup
-function featuredCardMarkup(product, index) {
-  return productCardMarkup(product, index, 'destacados');
-}
-
 // ═══════════════════════════════════════════
-// Render del feed de Destacados (pantalla inicial) — solo Destacado='SI',
-// agotados al fondo, precios ocultos en reposo
-// ═══════════════════════════════════════════
-// ═══════════════════════════════════════════
-// Skeleton shimmer diagonal — 3 tarjetas placeholder mientras initCatalog()
-// descarga y procesa el CSV. Misma forma exacta que una tarjeta real.
+// Skeleton — tarjeta grande placeholder mientras carga el CSV
 // ═══════════════════════════════════════════
 function skeletonCardMarkup() {
   return `
-    <div class="skeleton-card mb-4 shadow-md border border-brandGold/10">
-      <div class="flex items-center gap-3 p-3">
-        <div class="skeleton-card w-24 h-24 rounded-2xl flex-shrink-0">
-          <div class="skeleton-shimmer"></div>
-        </div>
-        <div class="flex-1 min-w-0 space-y-2">
-          <div class="skeleton-card h-4 w-3/4 rounded-full"><div class="skeleton-shimmer"></div></div>
-          <div class="skeleton-card h-3 w-1/2 rounded-full"><div class="skeleton-shimmer"></div></div>
-          <div class="skeleton-card h-2.5 w-2/5 rounded-full"><div class="skeleton-shimmer"></div></div>
-        </div>
+    <div class="skeleton-card shadow-sm border border-brandGold/10">
+      <div class="skeleton-card aspect-square"><div class="skeleton-shimmer"></div></div>
+      <div class="p-4 space-y-2">
+        <div class="skeleton-card h-4 w-3/4 rounded-full"><div class="skeleton-shimmer"></div></div>
+        <div class="skeleton-card h-3 w-1/2 rounded-full"><div class="skeleton-shimmer"></div></div>
       </div>
-      <div class="skeleton-shimmer"></div>
     </div>
   `;
 }
@@ -914,17 +881,19 @@ function skeletonCardMarkup() {
 function renderSkeletonLoader() {
   const grid = document.getElementById('featured-grid');
   if (!grid) return;
-  grid.innerHTML = `<div id="skeleton-wrapper">${skeletonCardMarkup()}${skeletonCardMarkup()}${skeletonCardMarkup()}</div>`;
+  grid.innerHTML = `<div id="skeleton-wrapper" class="col-span-full grid grid-cols-1 md:grid-cols-2 gap-6">${skeletonCardMarkup()}${skeletonCardMarkup()}</div>`;
 }
 
-// Quita el skeleton con un fade-out suave antes de insertar las tarjetas reales
 function dismissSkeletonThen(callback) {
   const wrapper = document.getElementById('skeleton-wrapper');
   if (!wrapper) { callback(); return; }
   wrapper.classList.add('skeleton-fade-out');
-  setTimeout(callback, 380); // coincide con la duración de skeletonFadeOut
+  setTimeout(callback, 380);
 }
 
+// ═══════════════════════════════════════════
+// Render de Destacados (dentro del scroll de Inicio) — solo Destacado='SI'
+// ═══════════════════════════════════════════
 function renderFeatured() {
   const grid = document.getElementById('featured-grid');
   if (!grid) return;
@@ -933,194 +902,124 @@ function renderFeatured() {
     .map((p, i) => ({ product: p, index: i }))
     .filter(item => isDestacado(item.product));
 
-  // ordenar: disponibles primero, agotados al fondo
-  featured.sort((a, b) => {
-    const aDisp = isDisponible(a.product) ? 0 : 1;
-    const bDisp = isDisponible(b.product) ? 0 : 1;
-    return aDisp - bDisp;
-  });
+  featured.sort((a, b) => (isDisponible(a.product) ? 0 : 1) - (isDisponible(b.product) ? 0 : 1));
 
   dismissSkeletonThen(() => {
     if (!featured.length) {
-      grid.innerHTML = `<p class="text-xs font-rounded text-brandInk/40 text-center py-6">Aún no hay productos destacados.</p>`;
+      grid.innerHTML = `<p class="col-span-full text-xs font-rounded text-brandInk/40 text-center py-6">Aún no hay productos destacados.</p>`;
       return;
     }
-    grid.innerHTML = featured.map(item => featuredCardMarkup(item.product, item.index)).join('');
-    filterGrid('featured-grid', CURRENT_SEARCH_TERM); // reaplicar búsqueda activa, si hay una
+    grid.innerHTML = featured.map(item => productCardMarkup(item.product, item.index)).join('');
   });
 }
 
 // ═══════════════════════════════════════════
-// Render del Catálogo Completo — TODO el inventario, precios visibles
-// desde el primer vistazo, agotados al fondo y bloqueados
+// Render de Colecciones — TODO el inventario, mismas tarjetas grandes
 // ═══════════════════════════════════════════
 function renderFullCatalog() {
   const grid = document.getElementById('full-catalog-grid');
   if (!grid) return;
 
   const all = CATALOG.map((p, i) => ({ product: p, index: i }));
+  all.sort((a, b) => (isDisponible(a.product) ? 0 : 1) - (isDisponible(b.product) ? 0 : 1));
 
-  all.sort((a, b) => {
-    const aDisp = isDisponible(a.product) ? 0 : 1;
-    const bDisp = isDisponible(b.product) ? 0 : 1;
-    return aDisp - bDisp;
-  });
+  grid.innerHTML = all.map(item => productCardMarkup(item.product, item.index)).join('');
 
-  // Mismo componente de tarjeta expandible que Destacados, pero con precio
-  // visible desde el inicio y un solo botón de acción (sin "Ver catálogo completo").
-  grid.innerHTML = all.map(item => productCardMarkup(item.product, item.index, 'catalogo')).join('');
-
-  document.getElementById('catalog-count').textContent = `✦ ${CATALOG.length} piezas`;
-
-  filterGrid('full-catalog-grid', CURRENT_SEARCH_TERM); // reaplicar búsqueda activa, si hay una
+  const countEl = document.getElementById('catalog-count');
+  if (countEl) countEl.textContent = `✦ ${CATALOG.length} piezas`;
 }
 
 function renderFullCatalogIfActive() {
-  const screen = document.getElementById('screen-catalogo-completo');
+  const screen = document.getElementById('screen-colecciones');
   if (screen && screen.classList.contains('active')) {
     renderFullCatalog();
   }
 }
-
 // ═══════════════════════════════════════════
-// Pantallas independientes — sin scroll-jump
+// Navegación entre pantallas — 'inicio' (scroll único), 'colecciones', 'nuestra-historia'
 // ═══════════════════════════════════════════
 function showScreen(screenName) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById('screen-' + screenName);
   if (target) target.classList.add('active');
 
-  document.querySelectorAll('.nav-pill[data-screen]').forEach(p => {
-    const isActive = p.dataset.screen === screenName;
-    p.classList.toggle('bg-brandGold', isActive);
-    p.classList.toggle('text-white', isActive);
-    p.classList.toggle('shadow-sm', isActive);
-    p.classList.toggle('bg-brandBlush', !isActive);
-    p.classList.toggle('text-brandInk', !isActive);
-    p.classList.toggle('border', !isActive);
-    p.classList.toggle('border-brandGold/30', !isActive);
+  document.querySelectorAll('.nav-link[data-screen]').forEach(link => {
+    const isActive = link.dataset.screen === screenName;
+    link.classList.toggle('text-brandGold', isActive);
+    link.classList.toggle('text-brandInk/80', !isActive);
   });
 
   window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
 
-  if (screenName === 'catalogo-completo') renderFullCatalog();
+  if (screenName === 'colecciones') renderFullCatalog();
+}
+
+// El enlace "Inicio" del nav siempre vuelve a la pantalla de inicio y al top
+function goToInicioTop(e) {
+  e.preventDefault();
+  showScreen('inicio');
 }
 
 // ═══════════════════════════════════════════
 // Init — se ejecuta al cargar el DOM
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  showScreen('destacados');
+  showScreen('inicio');
   initCatalog();
-  initSearch();
+  initVideoAutoplay();
 });
 
 // ═══════════════════════════════════════════
-// Búsqueda en tiempo real — filtra tanto Destacados como Catálogo Completo
-// a la vez, comparando contra Nombre y Descripción (sin tildes, sin mayúsculas).
+// Autoplay forzado vía JS — respaldo para navegadores que ignoran `autoplay`
+// en videos insertados dinámicamente
 // ═══════════════════════════════════════════
-function initSearch() {
-  const input = document.getElementById('search-input');
-  if (!input) return;
-  input.addEventListener('input', () => applySearchFilter(input.value));
-}
+function forcePlayVideo(video) {
+  if (!video || video.dataset.autoplayAttempted) return;
+  video.dataset.autoplayAttempted = '1';
+  video.muted = true;
+  video.loop = true;
+  video.autoplay = true;
 
-function applySearchFilter(rawTerm) {
-  CURRENT_SEARCH_TERM = normalizeSearchText(rawTerm);
-
-  filterGrid('featured-grid', CURRENT_SEARCH_TERM);
-  filterGrid('full-catalog-grid', CURRENT_SEARCH_TERM);
-}
-
-// Muestra/oculta las tarjetas de un contenedor según el término de búsqueda,
-// con una transición de opacidad suave antes de aplicar `hidden` por completo,
-// y gestiona su propio mensaje de "sin resultados" de forma independiente.
-function filterGrid(gridId, term) {
-  const grid = document.getElementById(gridId);
-  if (!grid) return;
-
-  const cards = grid.querySelectorAll('.product-card');
-  if (!cards.length) return; // aún no hay tarjetas renderizadas (skeleton / vacío)
-
-  let visibleCount = 0;
-
-  cards.forEach(card => {
-    const name = card.dataset.searchName || '';
-    const desc = card.dataset.searchDesc || '';
-    const matches = term === '' || name.includes(term) || desc.includes(term);
-
-    if (matches) {
-      const wasHidden = card.classList.contains('hidden');
-      if (wasHidden) {
-        // Forzar el estado "invisible" justo antes de mostrarla, para que el
-        // siguiente frame anime un fade-in real en vez de aparecer de golpe.
-        card.classList.add('search-fade-out');
-        card.classList.remove('hidden');
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          card.classList.remove('search-fade-out');
-        }));
-      } else {
-        card.classList.remove('search-fade-out');
-      }
-      visibleCount++;
-    } else {
-      card.classList.add('search-fade-out'); // dispara la transición de opacidad a 0
-      setTimeout(() => {
-        // si para entonces ya volvió a calzar con una búsqueda más reciente, no la ocultes
-        if (card.classList.contains('search-fade-out')) card.classList.add('hidden');
-      }, 220);
-    }
-  });
-
-  toggleNoResultsMessage(grid, gridId, visibleCount === 0 && term !== '');
-}
-
-// Inserta (o quita) el mensaje estético de "sin resultados" dentro del grid dado.
-function toggleNoResultsMessage(grid, gridId, shouldShow) {
-  let msgEl = document.getElementById('no-results-' + gridId);
-
-  if (shouldShow) {
-    if (!msgEl) {
-      msgEl = document.createElement('div');
-      msgEl.id = 'no-results-' + gridId;
-      msgEl.className = 'bg-brandBlush rounded-3xl p-6 text-center border border-brandGold/10 shadow-md';
-      msgEl.innerHTML = `
-        <p class="text-2xl mb-2">🔍</p>
-        <p class="text-sm font-rounded font-semibold text-brandInk/75">No se encontraron productos que coincidan con tu búsqueda.</p>
-        <p class="text-xs font-rounded text-brandInk/50 mt-1.5">Intenta con otra palabra o revisa la ortografía.</p>
-      `;
-      grid.appendChild(msgEl);
-    }
-  } else if (msgEl) {
-    msgEl.remove();
+  const playPromise = video.play();
+  if (playPromise !== undefined) {
+    playPromise
+      .then(() => video.removeAttribute('controls'))
+      .catch(() => video.setAttribute('controls', ''));
   }
 }
 
+function initVideoAutoplay() {
+  document.querySelectorAll('video[data-autoplay-video]').forEach(forcePlayVideo);
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType !== 1) return;
+        if (node.matches('video[data-autoplay-video]')) {
+          forcePlayVideo(node);
+        } else {
+          node.querySelectorAll('video[data-autoplay-video]').forEach(forcePlayVideo);
+        }
+      });
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
 // ═══════════════════════════════════════════
-// Acordeón — expandir/cerrar tarjetas en Destacados
-// Descripción y precio aparecen de inmediato, sin clics extra.
-// max-height se mide con scrollHeight para que el slide sea exacto y fluido,
-// sin importar cuánto contenido tenga cada tarjeta (carrusel, colores, etc.)
+// Acordeón — expandir/cerrar tarjetas grandes
 // ═══════════════════════════════════════════
 function closeCardDetails(details) {
   if (!details.classList.contains('open')) return;
-  // Forzar el max-height actual antes de colapsar para que la transición
-  // arranque desde un valor real y no desde "none" (lo cual rompería la animación)
   details.style.maxHeight = details.scrollHeight + 'px';
-  requestAnimationFrame(() => {
-    details.style.maxHeight = '0px';
-  });
+  requestAnimationFrame(() => { details.style.maxHeight = '0px'; });
   details.classList.remove('open');
-  const chev = details.closest('.product-card').querySelector('.card-chevron');
-  if (chev) chev.style.transform = '';
 }
 
 function openCardDetails(details) {
   details.classList.add('open');
   details.style.maxHeight = details.scrollHeight + 'px';
 
-  // Si alguna imagen o video interno carga después de medir (carrusel, foto/video
-  // principal), el alto real cambia: recalculamos para que nunca se corte contenido.
   const recalc = () => {
     if (details.classList.contains('open')) {
       details.style.maxHeight = details.scrollHeight + 'px';
@@ -1131,14 +1030,13 @@ function openCardDetails(details) {
     img.addEventListener('load', recalc, { once: true });
   });
   details.querySelectorAll('video').forEach(video => {
-    if (video.readyState >= 1) return; // ya tiene metadata (HAVE_METADATA o más)
+    if (video.readyState >= 1) return;
     video.addEventListener('loadedmetadata', recalc, { once: true });
   });
 }
 
 function toggleCard(card) {
   const details = card.querySelector('.card-details');
-  const chevron = card.querySelector('.card-chevron');
   const isOpen = details.classList.contains('open');
 
   document.querySelectorAll('.card-details.open').forEach(d => {
@@ -1150,16 +1048,14 @@ function toggleCard(card) {
     closeCardDetails(details);
   } else {
     openCardDetails(details);
-    if (chevron) chevron.style.transform = 'rotate(180deg)';
     setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
   }
 }
 
 // ═══════════════════════════════════════════
-// Carrusel táctil — swipe con touchstart/touchend, movido por transform.
-// Los dots reflejan dinámicamente (opacidad + estilo) la foto activa.
+// Carrusel táctil — swipe con touchstart/touchend
 // ═══════════════════════════════════════════
-const SWIPE_THRESHOLD = 40; // px mínimos de arrastre para cambiar de foto
+const SWIPE_THRESHOLD = 40;
 
 function goToSlide(trackId, dotsId, index) {
   const track = document.getElementById(trackId);
@@ -1181,15 +1077,6 @@ function goToSlide(trackId, dotsId, index) {
   });
 }
 
-// Mantengo updateDots como alias por compatibilidad con cualquier llamada previa
-function updateDots(trackId, dotsId) {
-  const track = document.getElementById(trackId);
-  if (!track) return;
-  goToSlide(trackId, dotsId, parseInt(track.dataset.index, 10) || 0);
-}
-
-// Delegación global de eventos táctiles — funciona para cualquier carrusel
-// que se inserte dinámicamente (productos destacados o catálogo completo)
 let touchStartX = 0;
 let touchCurrentX = 0;
 let touchingTrack = null;
@@ -1200,7 +1087,7 @@ document.addEventListener('touchstart', (e) => {
   touchingTrack = track;
   touchStartX = e.touches[0].clientX;
   touchCurrentX = touchStartX;
-  track.style.transition = 'none'; // sin transición mientras se arrastra, se siente más fluido
+  track.style.transition = 'none';
 }, { passive: true });
 
 document.addEventListener('touchmove', (e) => {
@@ -1208,14 +1095,13 @@ document.addEventListener('touchmove', (e) => {
   touchCurrentX = e.touches[0].clientX;
   const deltaX = touchCurrentX - touchStartX;
   const index = parseInt(touchingTrack.dataset.index, 10) || 0;
-  const percentDelta = (deltaX / touchingTrack.offsetWidth) * 100;
   touchingTrack.style.transform = `translateX(calc(-${index * 100}% + ${deltaX}px))`;
 }, { passive: true });
 
 document.addEventListener('touchend', () => {
   if (!touchingTrack) return;
   const track = touchingTrack;
-  track.style.transition = ''; // restaurar la transición CSS suave para el "settle"
+  track.style.transition = '';
 
   const deltaX = touchCurrentX - touchStartX;
   const index = parseInt(track.dataset.index, 10) || 0;
@@ -1227,7 +1113,7 @@ document.addEventListener('touchend', () => {
   } else if (deltaX >= SWIPE_THRESHOLD) {
     goToSlide(trackId, dotsId, index - 1);
   } else {
-    goToSlide(trackId, dotsId, index); // regresa a la foto actual (swipe insuficiente)
+    goToSlide(trackId, dotsId, index);
   }
 
   touchingTrack = null;
@@ -1237,10 +1123,8 @@ document.addEventListener('touchend', () => {
 
 // ═══════════════════════════════════════════
 // Selector de color — guarda el color activo SIN cerrar la tarjeta
-// (stopPropagation ya se aplica en el markup del botón)
 // ═══════════════════════════════════════════
 function selectColor(el) {
-  const key = el.dataset.key;
   const siblings = el.parentElement.querySelectorAll('.color-circle');
   siblings.forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
@@ -1250,20 +1134,74 @@ function getSelectedColor(cardEl) {
   if (!cardEl) return 'Variados';
   const selected = cardEl.querySelector('.color-circle.selected');
   if (selected) return selected.dataset.color;
-  // si no hay círculos de color (caso "Variados"), se usa ese texto
   return 'Variados';
 }
 
 // ═══════════════════════════════════════════
-// Pedido por WhatsApp — funciona tanto desde Destacados ('pN') como desde
-// el Catálogo Completo ('full-pN'), ya que ambos usan la misma tarjeta expandible.
+// SISTEMA DE LIKES — toggle visual instantáneo + persistencia en localStorage
+// (para no permitir likes duplicados desde este mismo navegador) + POST
+// asíncrono al Google Apps Script que suma +1 (o -1) en la columna "Likes".
+// ═══════════════════════════════════════════
+const LIKES_STORAGE_KEY = 'tintin_liked_products';
+
+function getLikedSet() {
+  try {
+    const raw = localStorage.getItem(LIKES_STORAGE_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function saveLikedSet(set) {
+  try {
+    localStorage.setItem(LIKES_STORAGE_KEY, JSON.stringify(Array.from(set)));
+  } catch (e) { /* localStorage no disponible — el like sigue funcionando en memoria */ }
+}
+
+function isLiked(key) {
+  return getLikedSet().has(key);
+}
+
+function toggleLike(btnEl, key) {
+  const liked = getLikedSet();
+  const wasLiked = liked.has(key);
+  const productName = CATALOG[parseInt(key.replace('p', ''), 10)]?.['Nombre'] || '';
+
+  if (wasLiked) {
+    liked.delete(key);
+    btnEl.classList.remove('liked');
+  } else {
+    liked.add(key);
+    btnEl.classList.add('liked');
+    btnEl.classList.add('pop');
+    setTimeout(() => btnEl.classList.remove('pop'), 350);
+  }
+  saveLikedSet(liked);
+
+  sendLikeToSheet(productName, wasLiked ? -1 : 1);
+}
+
+// POST asíncrono, no bloqueante — si falla (offline, endpoint no configurado),
+// el like visual local ya quedó aplicado y no se interrumpe la experiencia.
+function sendLikeToSheet(productName, delta) {
+  if (!LIKES_ENDPOINT || LIKES_ENDPOINT.startsWith('PEGA_AQUI')) return;
+
+  fetch(LIKES_ENDPOINT, {
+    method: 'POST',
+    mode: 'no-cors', // Apps Script Web Apps no siempre devuelven CORS headers
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ nombre: productName, delta: delta })
+  }).catch(err => console.warn('No se pudo registrar el like en el Sheet:', err));
+}
+
+// ═══════════════════════════════════════════
+// Pedido por WhatsApp
 // ═══════════════════════════════════════════
 function orderWhatsApp(e, key) {
   if (e && e.stopPropagation) e.stopPropagation();
 
-  // 'full-p3' -> índice 3 | 'p3' -> índice 3
-  const numericPart = key.replace('full-', '').replace('p', '');
-  const index = parseInt(numericPart, 10);
+  const index = parseInt(key.replace('p', ''), 10);
   const product = CATALOG[index];
   if (!product) return;
 
@@ -1282,4 +1220,3 @@ function sendWhatsAppOrder(nombre, precioFormateado, color) {
 
 </body>
 </html>
-
